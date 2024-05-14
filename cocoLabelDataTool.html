@@ -1,0 +1,153 @@
+<html>
+
+<head>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script> -->
+    <script src="./jquery-3.6.0.min.js"></script>
+    <!-- <link rel="stylesheet" href="./jquery-ui.css"> -->
+    <script src="./jquery-ui.min.js"></script>
+    <script>
+        var lableName = "0", x = 0, y = 0, w = 0, h = 0, datas = [];
+        $(function () {
+            $("#rectangle").resizable().draggable();
+            $("#rectangle").on("drag", function (event, ui) {
+                y = ui.position.top;
+                x = ui.position.left;
+                w = $("#rectangle").width();
+                h = $("#rectangle").height();
+                calcDataSet()
+            });
+            $("#rectangle").on("resize", function (event, ui) {
+                y = ui.position.top;
+                x = ui.position.left;
+                w = ui.size.width;
+                h = ui.size.height;
+                calcDataSet()
+            });
+            $('#imageInput').change(function () {
+                var file = this.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#imagePreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            $("#lableNameId").change(function () {
+                lableName = $(this).val()
+                // $("#rectangle").text(lableName)
+            })
+        });
+        function calcDataSet() {
+            let imgW = $("#imagePreview").width();
+            let imgH = $("#imagePreview").height()
+            let out = `${lableName} ${((x + w / 2) / imgW).toFixed(6)} ${((y + h / 2) / imgH).toFixed(6)} ${(w / imgW).toFixed(6)} ${(h / imgH).toFixed(6)}`
+            $("#datasets1").html(out)
+            $("#datasetspix").html(`x:${x} y:${y} w:${w} h:${h}`)
+        }
+        function saveToRight() {
+            datas.push($("#datasets1").text())
+            renderData();
+        }
+        function renderData() {
+            let html_ = ""
+            datas.forEach((item, index) => {
+                html_ += `${index ? '<br>' : ''}${item}`
+            })
+            $("#datasetSave").html(html_)
+        }
+        function clearRight() {
+            var userResponse = confirm("确定要清空数据吗？");
+            if (userResponse) {
+                $("#datasetSave").html('')
+            }
+        }
+        function clearRightLast() {
+            datas.pop()
+            renderData()
+        }
+    </script>
+</head>
+
+<body>
+    <div class="box">
+        <div>
+            <img id="imagePreview" src="">
+            <div id="rectangle" class="ui-widget-content">
+            </div>
+        </div>
+        <div class="action-style">
+            打开文件(必须是640x480的jpg格式图片)
+            <br>
+            <input type="file" id="imageInput" title="打开文件">
+            <br>
+            <br>
+            <div id="datasets">
+                标签名称:<input type="text" id="lableNameId" value="0"></input>
+            </div>
+            <br>
+            <div id="datasetspix"></div>
+            <div id="datasets1"></div>
+            <div>
+                <input type="button" value="保存" onclick="saveToRight()">
+            </div>
+        </div>
+        <div id="datasetSave"></div>
+        <div>
+            <input type="button" value="删除最后一个" onclick="clearRightLast()">
+            <input type="button" value="清空" onclick="clearRight()">
+        </div>
+    </div>
+</body>
+<style>
+    body {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .box {
+        display: flex;
+    }
+
+    #datasetSave {
+        border: 1px solid #aaaaaa;
+        width: 300px;
+        padding: 10px;
+    }
+
+    #datasets1 {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #datasets {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #rectangle {
+        width: 150px;
+        height: 150px;
+        background: #ff3131;
+        border: 1px solid #5e0000;
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        opacity: 0.5;
+    }
+
+    #imagePreview {
+        width: 640px;
+    }
+
+    .action-style {
+        margin-left: 10px;
+        width: 300px;
+    }
+</style>
+
+</html>
